@@ -1,10 +1,12 @@
 <template>
-<h1>E-wallet</h1>
+<h1>{{header}}</h1>
 </template>
 
 <script>
 export default {
-
+props: {
+    header: String
+}
 }
 </script>
 

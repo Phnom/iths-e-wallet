@@ -65,9 +65,12 @@ new Vue({
       return this.inputCard
     }, getId() {
       return this.currentId
-    }
-  }, watch: {
-    cards(value) {
+    }, 
+    deleteActiveCard() {
+      this.cards.splice(this.getCards().findIndex(element => element.id === this.currentId), 1)
+      this.currentId = this.getCards()[0].id
+    }}, watch: {
+      cards(value) {
       this.inputCard.id = 432984728397 + value.length
     }
   },

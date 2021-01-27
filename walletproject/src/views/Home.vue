@@ -1,8 +1,9 @@
 <template>
   <div class="card-view">
-    <Top class="top"/>
-    <Card class="card" v-bind:cardInfo="cardInfo" />
-    <CardStack @clicked="changeId()" class="card-stack" v-bind:id="id" />
+    <Top class="top" :header="'E-Wallet'" />
+    <Card @deleteCard="CardDelete=true" class="card" v-bind:cardInfo="cardInfo" />
+    <CardDelete @clicked="DeleteCard" v-show="CardDelete" class="card-delete"/>
+    <CardStack v-show="!CardDelete" class="card-stack" v-bind:id="cardId" />
     <router-link class="button" to="/addcard">Add a new card</router-link>
   </div>
 </template>
@@ -12,25 +13,36 @@
 import Top from "@/components/Top.vue";
 import Card from "@/components/Card.vue";
 import CardStack from "@/components/CardStack.vue";
+import CardDelete from "@/components/CardDelete.vue";
 
 export default {
   data() {
     return {
+      CardDelete: false,
       id: this.$root.getId(),
-    }
+    };
   },
   computed: {
     cardInfo() {
-      return this.$root.getCard(this.id);
+      return this.$root.getCard(this.cardId);
+    },
+    cardId() {
+      return this.$root.getId();
     },
   },
   components: {
     Top,
     Card,
     CardStack,
+    CardDelete
   }, methods: {
-    changeId(value) {
-      this.id = value
+    DeleteCard(value) {
+      if (value) {
+        this.$root.deleteActiveCard()
+        this.CardDelete = false
+      } else {
+        this.CardDelete = false
+      }
     }
   }
 };
@@ -38,15 +50,16 @@ export default {
 <style scoped>
 .card-view {
   display: grid;
-  grid-template-rows: auto auto 1fr 1fr auto;
+  grid-template-rows: auto repeat(3, 1fr) auto;
+  align-content: center;
 }
 .top {
   grid-row: 1/2;
 }
 .card {
-  grid-row: 2/3;
+    grid-row: 2/3;
 }
-.card-stack {
+.card-delete, .card-stack {
   grid-row: 3/4;
 }
 .button {
@@ -59,20 +72,19 @@ export default {
   border: 0.2rem solid black;
   padding: auto;
   border-radius: 0.7rem;
-  width: 100%;
   font-size: 2rem;
-  height: 4rem;
   display: flex;
   justify-content: center;
   align-items: center;
+  height: 4rem;
 }
 .button:hover {
   background: black;
   color: white;
 }
 @media screen and (min-width: 1000px) {
-.card-view  {
-  justify-content: center;
-}
+  .card-view {
+    justify-content: center;
+  }
 }
 </style>

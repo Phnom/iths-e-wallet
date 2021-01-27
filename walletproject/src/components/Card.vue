@@ -1,7 +1,17 @@
 <template>
-  <div class="card" :style="{ backgroundColor: getBColor, color: getColor }">
+  <div
+    @click="changeCard()"
+    class="card"
+    :style="{ backgroundColor: getBColor, color: getColor }"
+  >
     <div class="card-img">
-      <Chip v-bind:chipFill="getChipFill" />
+      <Chip :chipFill="getChipFill" />
+      <Trash
+        class="trash"
+        v-if="this.cardInfo.id === this.$root.getId()"
+        :vendor="cardInfo.vendor"
+        @clicked="deleteCard()"
+      />
       <img :src="vendorImg" alt="" />
     </div>
     <p class="card-number">{{ getNumber }}</p>
@@ -11,37 +21,41 @@
     </div>
     <div class="card-valid">
       <span class="valid-label">Valid thru</span>
-      <p class="valid-date">
-        {{ cardInfo.validMonth }}/{{ cardInfo.validYear }}
-      </p>
+      <p class="valid-date">{{ getMonth }}/{{ getYear }}</p>
     </div>
   </div>
 </template>
 
 <script>
 import Chip from "@/components/Chip.vue";
+import Trash from "@/components/Trash.vue";
 export default {
   data() {
     return {
-      currentCardNumber: ""
+      color: "red",
+      currentCardNumber: "",
     };
   },
   components: {
     Chip,
+    Trash,
   },
   computed: {
+    activeCard() {
+      return this.CardInfo.id === this.$root.getId();
+    },
     vendorImg() {
       return this.$root.getImg(this.cardInfo.vendor);
     },
     getName() {
       if (this.cardInfo.holder.length === 0) {
-        return "Name"
+        return "Name";
       } else {
-        return this.cardInfo.holder
+        return this.cardInfo.holder;
       }
     },
     getNumber() {
-        return (
+      return (
         this.cardInfo.number.slice(0, 4) +
         " " +
         this.cardInfo.number.slice(4, 8) +
@@ -49,10 +63,13 @@ export default {
         this.cardInfo.number.slice(8, 12) +
         " " +
         this.cardInfo.number.slice(12, 16)
-      )
+      );
     },
     getColor() {
-      if (this.cardInfo.vendor === "bitcoin" || this.cardInfo.vendor.length === 0) {
+      if (
+        this.cardInfo.vendor === "bitcoin" ||
+        this.cardInfo.vendor.length === 0
+      ) {
         return "#222";
       } else {
         return "#fff";
@@ -68,7 +85,7 @@ export default {
       } else if (this.cardInfo.vendor === "evil") {
         return "#f33355";
       } else {
-        return "#d0d0d0"
+        return "#d0d0d0";
       }
     },
     getChipFill() {
@@ -78,16 +95,32 @@ export default {
         return "#fff";
       }
     },
+    getYear() {
+      if (this.cardInfo.validYear === "0") {
+        return "YY";
+      } else {
+        return this.cardInfo.validYear.substring(2);
+      }
+    },
+    getMonth() {
+      if (this.cardInfo.validMonth === "0") {
+        return "MM";
+      } else {
+        return this.cardInfo.validMonth;
+      }
+    },
   },
   props: {
     cardInfo: Object,
-  }, watch: {
-    cardInfo(value) {
-      this.currentCardNumber = "XXXXXXXXXXXXXXXX"
-      this.currentCardNumber.subString(0, value.number)
-      this.currentCardNumber += value.number
-    }
-  }
+  },
+  methods: {
+    changeCard() {
+      this.$emit("changeCard", this.cardInfo.id);
+    },
+    deleteCard() {
+      this.$emit("deleteCard");
+    },
+  },
 };
 </script>
 
@@ -98,7 +131,9 @@ export default {
   white-space: nowrap;
   text-transform: uppercase;
 }
+
 .card {
+  box-sizing: border-box;
   width: 100%;
   padding: 0.8rem;
   display: grid;
@@ -109,13 +144,24 @@ export default {
   border-radius: 0.6rem;
 }
 .card-img {
+  cursor: pointer;
   grid-row: 1/2;
   grid-column: 1 / end;
   display: flex;
+  align-items: flex-start;
   justify-content: space-between;
 }
 .card-img > :nth-child(2) {
   align-self: start;
+}
+.card-img > .trash {
+  display: none;
+}
+.card-img:hover > .trash {
+  display: block;
+}
+.card-img:hover > :nth-child(3) {
+  display: none;
 }
 .card-holder {
   text-align: left;

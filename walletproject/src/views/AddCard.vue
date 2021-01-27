@@ -1,6 +1,7 @@
 <template>
   <div class="add-card">
-    <Top />
+    <Top :header="'Add a new bank card'" />
+    <p>NEW card</p>
     <Card v-bind:cardInfo="getCard"/>
     <CardForm class="card-form"/>
   </div>
@@ -25,10 +26,14 @@ export default {
 </script>
 
 <style scoped>
+p {
+  color: grey;
+}
 .add-card {
   display: flex;
   flex-direction: column;
   align-items: stretch;
+  padding-bottom: 12rem;
 }
 .card-form {
   width: 100%;

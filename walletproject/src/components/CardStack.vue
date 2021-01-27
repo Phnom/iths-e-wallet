@@ -1,6 +1,6 @@
 <template>
 <div class="card-stack">
-    <Card class="card-stack-card" v-for="(item, index) of cards" :style="{zIndex:index, top:index*10+'%'}" @click="changeCard()" v-bind:key="item.id" v-bind:cardInfo="item" v-show="item.id != id"/>
+    <Card class="card-stack-card" @changeCard="changeActiveCard" v-for="(item, index) of cards" :style="{zIndex:index, top:index*10+'%'}" v-bind:key="item.id" v-bind:cardInfo="item" v-show="item.id != id"/>
 </div>
 </template>
 
@@ -17,8 +17,8 @@ export default {
   }, props: {
       id: String
   }, methods: {
-      changeCard(event) {
-          this.$root.currentId = event.id
+      changeActiveCard(value) {
+          this.$root.currentId = value
       }
   }
 }
@@ -26,6 +26,7 @@ export default {
 
 <style scoped>
 .card-stack {
+    cursor: pointer;
     display: grid;
     grid-auto-rows: 4rem;
 }
